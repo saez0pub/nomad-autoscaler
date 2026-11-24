@@ -36,7 +36,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=ref,event=tag
+            type=match,pattern=v(.*),group=1
             type=raw,value=latest,enable=${{ !contains(github.ref_name, '-') }}
 
       - name: Build and push
