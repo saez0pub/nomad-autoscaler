@@ -50,6 +50,11 @@ type checkRunner struct {
 	schedule       *compiledSchedule
 	scheduleErr    error
 	scheduleOnce   sync.Once
+
+	evalLock sync.Mutex
+	// lastQueryResult holds the latest value returned by the query during the
+	// most recent evaluation, or nil if the check did not query an APM.
+	lastQueryResult *float64
 }
 
 type queryMetricsCacheKey struct {
@@ -264,6 +269,30 @@ func (ch *checkRunner) group() string {
 	return ch.check.Group
 }
 
+// lastEvaluation returns the check name and the latest query result recorded
+// during the most recent evaluation. The query result is nil when the check
+// did not query an APM, such as with the fixed-value strategy.
+func (ch *checkRunner) lastEvaluation() (string, *float64) {
+	ch.evalLock.Lock()
+	defer ch.evalLock.Unlock()
+
+	return ch.check.Name, ch.lastQueryResult
+}
+
+func (ch *checkRunner) setLastQueryResult(ms sdk.TimestampedMetrics) {
+	ch.evalLock.Lock()
+	defer ch.evalLock.Unlock()
+
+	if len(ms) == 0 {
+		ch.lastQueryResult = nil
+		return
+	}
+
+	// Metrics are sorted by timestamp, the strategies use the latest value.
+	v := ms[len(ms)-1].Value
+	ch.lastQueryResult = &v
+}
+
 // runCheckAndCapCount evaluates the check and caps the returned action.
 //
 // The method returns errCheckOutsideSchedule when the check is outside its
@@ -280,6 +309,9 @@ func (ch *checkRunner) runCheckAndCapCount(ctx context.Context, currentCount int
 		return sdk.ScalingAction{}, errCheckOutsideSchedule
 	}
 
+	// Reset so a previous evaluation result is never reported for this one.
+	ch.setLastQueryResult(nil)
+
 	metrics := sdk.TimestampedMetrics{}
 	// Fixed-value strategy does not require APM metrics; all other strategies still do.
 	if ch.check.Strategy.Name != plugins.InternalStrategyFixedValue {
@@ -288,6 +320,7 @@ func (ch *checkRunner) runCheckAndCapCount(ctx context.Context, currentCount int
 		if err != nil {
 			return sdk.ScalingAction{}, fmt.Errorf("failed to query source: %w", err)
 		}
+		ch.setLastQueryResult(metrics)
 	}
 
 	action, err := ch.getNewCountFromStrategy(ctx, currentCount, metrics)

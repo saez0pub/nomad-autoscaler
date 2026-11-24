@@ -451,4 +451,53 @@ func TestCheckHandler_runCheckAndCapCount_FixedValueSkipsAPMQuery(t *testing.T) 
 	test.Eq(t, sdk.ScaleDirectionUp, action.Direction)
 	test.Eq(t, 0, ml.queryCalls, test.Sprint("should not have made any apm queries"))
 	test.Eq(t, 1, sr.runCalls)
+
+	name, queryResult := runner.lastEvaluation()
+	test.Eq(t, "fixed-value-check", name)
+	test.Nil(t, queryResult, test.Sprint("fixed-value has no query result"))
+}
+
+func TestCheckHandler_lastEvaluation_ReportsLatestQueryResult(t *testing.T) {
+	nowFunc = func() time.Time {
+		return time.Date(2026, 1, 1, 10, 30, 0, 0, time.UTC)
+	}
+
+	sr := &mockStrategyRunner{t: t, count: 10, direction: sdk.ScaleDirectionUp}
+	ml := &mockAPMLooker{
+		t:     t,
+		query: "query",
+		metrics: sdk.TimestampedMetrics{
+			{Timestamp: nowFunc().Add(-30 * time.Second), Value: 41},
+			{Timestamp: nowFunc(), Value: 42},
+		},
+		timeRange: sdk.TimeRange{
+			From: nowFunc().Add(-time.Minute),
+			To:   nowFunc(),
+		},
+	}
+
+	runner := newCheckRunner(&CheckRunnerConfig{
+		Log:            hclog.NewNullLogger(),
+		StrategyRunner: sr,
+		MetricsGetter:  ml,
+		Policy:         testPolicy,
+	}, &sdk.ScalingPolicyCheck{
+		Name:        "backlog",
+		Source:      "mock",
+		Query:       "query",
+		QueryWindow: time.Minute,
+		Strategy:    &sdk.ScalingPolicyStrategy{Name: "strategy"},
+	})
+
+	_, err := runner.runCheckAndCapCount(context.Background(), 5, newQueryMetricsCache())
+	must.NoError(t, err)
+
+	name, queryResult := runner.lastEvaluation()
+	test.Eq(t, "backlog", name)
+	must.NotNil(t, queryResult)
+	test.Eq(t, float64(42), *queryResult)
+
+	details := evaluationDetails{check: name, queryResult: queryResult}
+	test.Eq(t, []any{"check", "backlog", "query_result", float64(42)}, details.logArgs())
+	test.Eq(t, 0, len(evaluationDetails{}.logArgs()))
 }

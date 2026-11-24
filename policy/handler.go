@@ -66,6 +66,30 @@ type checker interface {
 	group() string
 }
 
+// evaluationReporter is optionally implemented by checkers that can report the
+// details of their latest evaluation, so they can be logged by the handler.
+type evaluationReporter interface {
+	lastEvaluation() (check string, queryResult *float64)
+}
+
+// evaluationDetails describes the check that decided a scaling action.
+type evaluationDetails struct {
+	check       string
+	queryResult *float64
+}
+
+// logArgs returns the details as key/value pairs to append to a log line.
+func (e evaluationDetails) logArgs() []any {
+	var args []any
+	if e.check != "" {
+		args = append(args, "check", e.check)
+	}
+	if e.queryResult != nil {
+		args = append(args, "query_result", *e.queryResult)
+	}
+	return args
+}
+
 // Handler monitors a policy for changes and controls when them are sent for
 // evaluation.
 type Handler struct {
@@ -328,7 +352,7 @@ func (h *Handler) Run(ctx context.Context) {
 			}
 
 			currentCount := currentStatus.Count
-			action, err := h.calculateNewCount(ctx, currentCount)
+			action, details, err := h.calculateNewCount(ctx, currentCount)
 			if err != nil {
 				// Returning here avoids re-entering the ticker case on a canceled/expired context;
 				//  ctx.Done() would win on the next iteration anyway but Go's select is non-deterministic.
@@ -342,9 +366,11 @@ func (h *Handler) Run(ctx context.Context) {
 				continue
 			}
 
-			h.log.Info("calculating scaling target", "policy_id", h.policy.ID,
+			logArgs := []any{"policy_id", h.policy.ID,
 				"from", currentCount, "to",
-				action.Count, "reason", action.Reason, "meta", action.Meta)
+				action.Count, "reason", action.Reason, "meta", action.Meta}
+			logArgs = append(logArgs, details.logArgs()...)
+			h.log.Info("calculating scaling target", logArgs...)
 
 			if !scalingNeeded(action, currentCount) {
 				h.log.Info("skipping scaling, no action needed")
@@ -481,8 +507,9 @@ func (h *Handler) applyMutators(p *sdk.ScalingPolicy) {
 
 // calculateNewCount is the main part of the controller, it
 // gets the metrics and the necessary new count to keep up with the policy
-// and generates a scaling action if needed.
-func (h *Handler) calculateNewCount(ctx context.Context, currentCount int64) (sdk.ScalingAction, error) {
+// and generates a scaling action if needed. It also returns the details of the
+// check that decided the action, when available.
+func (h *Handler) calculateNewCount(ctx context.Context, currentCount int64) (sdk.ScalingAction, evaluationDetails, error) {
 	h.log.Debug("received policy for evaluation")
 
 	// Record the start time of the eval portion of this function. The labels
@@ -504,7 +531,7 @@ func (h *Handler) calculateNewCount(ctx context.Context, currentCount int64) (sd
 				h.log.Debug("skipping check, outside schedule window")
 				continue
 			}
-			return sdk.ScalingAction{}, fmt.Errorf("failed to run check and cap count: %w", err)
+			return sdk.ScalingAction{}, evaluationDetails{}, fmt.Errorf("failed to run check and cap count: %w", err)
 		}
 
 		g := ch.group()
@@ -517,7 +544,12 @@ func (h *Handler) calculateNewCount(ctx context.Context, currentCount int64) (sd
 
 	winner := pickWinnerActionFromGroups(checkGroups)
 	if winner.handler == nil || winner.action == nil {
-		return sdk.ScalingAction{}, nil
+		return sdk.ScalingAction{}, evaluationDetails{}, nil
+	}
+
+	var details evaluationDetails
+	if r, ok := winner.handler.(evaluationReporter); ok {
+		details.check, details.queryResult = r.lastEvaluation()
 	}
 
 	h.log.Debug("check selected", "direction", winner.action.Direction,
@@ -532,7 +564,7 @@ func (h *Handler) calculateNewCount(ctx context.Context, currentCount int64) (sd
 			"count", currentCount, "reason", winner.action.Reason, "meta", winner.action.Meta)
 	}
 
-	return *winner.action, nil
+	return *winner.action, details, nil
 }
 
 // runTargetStatus wraps the target.Status call to provide operational
