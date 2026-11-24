@@ -403,7 +403,7 @@ func TestHandler_calculateNewCount_SentinelErrorsSkipped_UnknownErrorFails(t *te
 				checkRunners: checkRunners,
 			}
 
-			action, err := handler.calculateNewCount(context.Background(), 2)
+			action, _, err := handler.calculateNewCount(context.Background(), 2)
 			if tc.expectedErrText != "" {
 				must.Error(t, err)
 				must.ErrorContains(t, err, tc.expectedErrText)
