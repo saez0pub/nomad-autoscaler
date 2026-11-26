@@ -1,0 +1,26 @@
+{
+  "ID": "big",
+  "Name": "big",
+  "Type": "service",
+  "TaskGroups": [
+    {
+      "Name": "web",
+      "Tasks": [
+        {
+          "Name": "app",
+          "Resources": {
+            "CPU": 2000,
+            "MemoryMB": 4000
+          }
+        },
+        {
+          "Name": "sidecar",
+          "Resources": {
+            "CPU": 1000,
+            "MemoryMB": 2000
+          }
+        }
+      ]
+    }
+  ]
+}

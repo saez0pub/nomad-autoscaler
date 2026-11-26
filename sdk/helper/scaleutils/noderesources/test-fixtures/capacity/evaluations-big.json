@@ -1,0 +1,26 @@
+[
+  {
+    "ID": "e1",
+    "Namespace": "default",
+    "JobID": "big",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "DimensionExhausted": {
+          "cpu": 2,
+          "memory": 3
+        },
+        "NodesExhausted": 3,
+        "ClassExhausted": {
+          "app": 3
+        }
+      }
+    }
+  }
+]

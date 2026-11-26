@@ -334,6 +334,14 @@ func (c *ClusterScaleUtils) SelectScaleInNodes(nodes []*api.NodeListStub, cfg ma
 		return nil, fmt.Errorf("no nodes selected using strategy %s", selector.Name())
 	}
 
+	// When enabled, make sure the allocations on the selected nodes have room
+	// on the remaining nodes. The returned error can be a no-op error, so
+	// callers must wrap it with %w to keep its type.
+	out, err = c.limitScaleInByFit(cfg, out)
+	if err != nil {
+		return nil, err
+	}
+
 	// Selection can filter most of the nodes in the filtered list, we should
 	// log about this, but using certain strategies this is to be expected.
 	if len(out) < num {

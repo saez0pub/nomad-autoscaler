@@ -119,7 +119,7 @@ func (t *TargetPlugin) scaleIn(ctx context.Context, group instanceGroup, num int
 
 	ids, err := t.clusterUtils.RunPreScaleInTasksWithRemoteCheck(ctx, config, remoteIDs, int(num))
 	if err != nil {
-		return fmt.Errorf("failed to perform pre-scale Nomad scale in tasks: %v", err)
+		return fmt.Errorf("failed to perform pre-scale Nomad scale in tasks: %w", err)
 	}
 
 	// Grab the instanceIDs

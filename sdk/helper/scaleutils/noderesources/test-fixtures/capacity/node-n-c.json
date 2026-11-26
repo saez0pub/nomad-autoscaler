@@ -1,0 +1,11 @@
+{
+  "ID": "n-c",
+  "NodeResources": {
+    "Cpu": {
+      "CpuShares": 4000
+    },
+    "Memory": {
+      "MemoryMB": 8000
+    }
+  }
+}

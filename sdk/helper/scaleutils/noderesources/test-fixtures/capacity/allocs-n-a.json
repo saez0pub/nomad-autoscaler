@@ -1,0 +1,86 @@
+[
+  {
+    "ID": "a1",
+    "ClientStatus": "running",
+    "DesiredStatus": "run",
+    "Job": {
+      "ID": "j-a1",
+      "Type": "service"
+    },
+    "AllocatedResources": {
+      "Tasks": {
+        "main": {
+          "Cpu": {
+            "CpuShares": 1500
+          },
+          "Memory": {
+            "MemoryMB": 3000
+          }
+        }
+      }
+    }
+  },
+  {
+    "ID": "a2",
+    "ClientStatus": "pending",
+    "DesiredStatus": "run",
+    "Job": {
+      "ID": "j-a2",
+      "Type": "service"
+    },
+    "AllocatedResources": {
+      "Tasks": {
+        "main": {
+          "Cpu": {
+            "CpuShares": 500
+          },
+          "Memory": {
+            "MemoryMB": 1000
+          }
+        }
+      }
+    }
+  },
+  {
+    "ID": "a3",
+    "ClientStatus": "complete",
+    "DesiredStatus": "run",
+    "Job": {
+      "ID": "j-a3",
+      "Type": "service"
+    },
+    "AllocatedResources": {
+      "Tasks": {
+        "main": {
+          "Cpu": {
+            "CpuShares": 2000
+          },
+          "Memory": {
+            "MemoryMB": 4000
+          }
+        }
+      }
+    }
+  },
+  {
+    "ID": "a4",
+    "ClientStatus": "running",
+    "DesiredStatus": "stop",
+    "Job": {
+      "ID": "j-a4",
+      "Type": "service"
+    },
+    "AllocatedResources": {
+      "Tasks": {
+        "main": {
+          "Cpu": {
+            "CpuShares": 2000
+          },
+          "Memory": {
+            "MemoryMB": 4000
+          }
+        }
+      }
+    }
+  }
+]

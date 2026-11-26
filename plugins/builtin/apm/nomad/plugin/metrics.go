@@ -26,11 +26,19 @@ const (
 	// queryOps below are the supported operators for node pool queries.
 	queryOpPercentageAllocated = "percentage-allocated"
 
+	// queryOpFitDeficit is the node pool operation which reports how many nodes
+	// must be added so that the allocations waiting in blocked evaluations fit
+	// on a single node. It supports the "blocked" metric only.
+	queryOpFitDeficit = "fit-deficit"
+
 	// queryMetrics are the supported resources for querying.
 	queryMetricCPU          = "cpu"
 	queryMetricCPUAllocated = "cpu-allocated"
 	queryMetricMem          = "memory"
 	queryMetricMemAllocated = "memory-allocated"
+
+	// queryMetricBlocked is the metric of the fit deficit operation.
+	queryMetricBlocked = "blocked"
 )
 
 // Query satisfies the Query function on the apm.APM interface.

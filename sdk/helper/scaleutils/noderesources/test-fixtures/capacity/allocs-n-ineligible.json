@@ -1,0 +1,23 @@
+[
+  {
+    "ID": "i1",
+    "ClientStatus": "running",
+    "DesiredStatus": "run",
+    "Job": {
+      "ID": "j-i1",
+      "Type": "service"
+    },
+    "AllocatedResources": {
+      "Tasks": {
+        "main": {
+          "Cpu": {
+            "CpuShares": 500
+          },
+          "Memory": {
+            "MemoryMB": 1000
+          }
+        }
+      }
+    }
+  }
+]

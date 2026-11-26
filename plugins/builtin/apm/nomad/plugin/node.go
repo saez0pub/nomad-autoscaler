@@ -46,6 +46,11 @@ func (a *APMPlugin) queryNodePool(q string) (sdk.TimestampedMetrics, error) {
 	}
 	a.logger.Debug("performing node pool APM query", "query", q)
 
+	// The fit deficit query does not look at the pool totals.
+	if query.operation == queryOpFitDeficit {
+		return a.queryBlockedFit(q, query)
+	}
+
 	// Identify the resource available and consumed within the target pool.
 	resources, err := a.getPoolResources(query.poolIDs)
 	if err != nil {
@@ -223,18 +228,22 @@ func parseNodePoolQuery(q string) (*nodePoolQuery, error) {
 		return nil, fmt.Errorf("expected node_<operation>_<metric>, received %s", mainParts[0])
 	}
 
-	if err := validateMetricNodeQuery(opMetricParts[2]); err != nil {
-		return nil, err
-	}
-	query.metric = opMetricParts[2]
-
+	// Each operation supports its own set of metrics.
 	switch opMetricParts[1] {
 	case queryOpPercentageAllocated:
-		query.operation = opMetricParts[1]
+		if err := validateMetricNodeQuery(opMetricParts[2]); err != nil {
+			return nil, err
+		}
+	case queryOpFitDeficit:
+		if err := validateMetric(opMetricParts[2], []string{queryMetricBlocked}); err != nil {
+			return nil, err
+		}
 	default:
-		return nil, fmt.Errorf("invalid operation %q, allowed value is %s",
-			opMetricParts[1], queryOpPercentageAllocated)
+		return nil, fmt.Errorf("invalid operation %q, allowed values are %s, %s",
+			opMetricParts[1], queryOpPercentageAllocated, queryOpFitDeficit)
 	}
+	query.metric = opMetricParts[2]
+	query.operation = opMetricParts[1]
 	return &query, nil
 }
 

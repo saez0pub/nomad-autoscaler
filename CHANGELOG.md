@@ -1,5 +1,9 @@
 ## UNRELEASED
 
+FEATURES:
+* **plugin/apm/nomad**: Add the `fit-deficit_blocked` node pool query. It returns `1` when an allocation waits in a blocked evaluation because CPU or memory is exhausted, and no single node of the pool can host it while a new node would, and `0` otherwise. Unlike pool totals, it is computed from the free capacity of each node. Use it with the `threshold` strategy in the same `group` as the utilization checks.
+* **target**: Add the optional `node_scalein_fit_check` cluster target option. When enabled, nodes are only drained if their allocations, and the blocked allocations that current nodes can host, fit on the remaining nodes. The selection is reduced, or the scale-in skipped without a cooldown, otherwise.
+
 IMPROVEMENTS:
 * build: Updated to Go 1.27.2 [[GH-1359](https://github.com/hashicorp/nomad-autoscaler/pull/1359)]
 

@@ -1,0 +1,215 @@
+[
+  {
+    "ID": "e1",
+    "Namespace": "default",
+    "JobID": "big",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "DimensionExhausted": {
+          "cpu": 2,
+          "memory": 3
+        },
+        "NodesExhausted": 3,
+        "ClassExhausted": {
+          "app": 3
+        }
+      }
+    }
+  },
+  {
+    "ID": "e2",
+    "Namespace": "default",
+    "JobID": "constraint",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "ClassFiltered": {
+          "app": 3
+        },
+        "ConstraintFiltered": {
+          "${attr.kernel.name} = windows": 3
+        },
+        "NodesFiltered": 3
+      }
+    }
+  },
+  {
+    "ID": "e3",
+    "Namespace": "default",
+    "JobID": "other",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "DimensionExhausted": {
+          "cpu": 1
+        },
+        "NodesExhausted": 3,
+        "ClassExhausted": {
+          "gpu": 1
+        }
+      }
+    }
+  },
+  {
+    "ID": "e4",
+    "Namespace": "default",
+    "JobID": "sys",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "DimensionExhausted": {
+          "cpu": 2,
+          "memory": 3
+        },
+        "NodesExhausted": 3,
+        "ClassExhausted": {
+          "app": 3
+        }
+      }
+    }
+  },
+  {
+    "ID": "e5",
+    "Namespace": "default",
+    "JobID": "big",
+    "Status": "complete",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "DimensionExhausted": {
+          "cpu": 2,
+          "memory": 3
+        },
+        "NodesExhausted": 3,
+        "ClassExhausted": {
+          "app": 3
+        }
+      }
+    }
+  },
+  {
+    "ID": "e6",
+    "Namespace": "default",
+    "JobID": "huge",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "DimensionExhausted": {
+          "cpu": 2,
+          "memory": 3
+        },
+        "NodesExhausted": 3,
+        "ClassExhausted": {
+          "app": 3
+        }
+      }
+    }
+  },
+  {
+    "ID": "e7",
+    "Namespace": "default",
+    "JobID": "small",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "DimensionExhausted": {
+          "cpu": 2,
+          "memory": 3
+        },
+        "NodesExhausted": 3,
+        "ClassExhausted": {
+          "app": 3
+        }
+      }
+    }
+  },
+  {
+    "ID": "e8",
+    "Namespace": "default",
+    "JobID": "other",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "gpu",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "DimensionExhausted": {
+          "cpu": 1
+        },
+        "NodesExhausted": 3,
+        "ClassExhausted": {
+          "app": 1
+        }
+      }
+    }
+  },
+  {
+    "ID": "e9",
+    "Namespace": "default",
+    "JobID": "purged",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "DimensionExhausted": {
+          "cpu": 2,
+          "memory": 3
+        },
+        "NodesExhausted": 3,
+        "ClassExhausted": {
+          "app": 3
+        }
+      }
+    }
+  }
+]

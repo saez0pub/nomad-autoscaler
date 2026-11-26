@@ -1,0 +1,19 @@
+{
+  "ID": "huge",
+  "Name": "huge",
+  "Type": "service",
+  "TaskGroups": [
+    {
+      "Name": "web",
+      "Tasks": [
+        {
+          "Name": "app",
+          "Resources": {
+            "CPU": 9000,
+            "MemoryMB": 16000
+          }
+        }
+      ]
+    }
+  ]
+}

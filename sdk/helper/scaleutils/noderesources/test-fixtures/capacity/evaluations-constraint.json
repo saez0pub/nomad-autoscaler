@@ -1,0 +1,25 @@
+[
+  {
+    "ID": "e2",
+    "Namespace": "default",
+    "JobID": "constraint",
+    "Status": "blocked",
+    "TriggeredBy": "queued-allocs",
+    "FailedTGAllocs": {
+      "web": {
+        "NodesEvaluated": 3,
+        "NodePool": "default",
+        "NodesAvailable": {
+          "dc1": 3
+        },
+        "ClassFiltered": {
+          "app": 3
+        },
+        "ConstraintFiltered": {
+          "${attr.kernel.name} = windows": 3
+        },
+        "NodesFiltered": 3
+      }
+    }
+  }
+]

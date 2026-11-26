@@ -1,0 +1,110 @@
+[
+  {
+    "ID": "n-a",
+    "Name": "n-a",
+    "NodeClass": "app",
+    "NodePool": "default",
+    "Datacenter": "dc1",
+    "Status": "ready",
+    "Drain": false,
+    "SchedulingEligibility": "eligible",
+    "NodeResources": {
+      "Cpu": {
+        "CpuShares": 4200
+      },
+      "Memory": {
+        "MemoryMB": 8512
+      }
+    },
+    "ReservedResources": {
+      "Cpu": {
+        "CpuShares": 200
+      },
+      "Memory": {
+        "MemoryMB": 512
+      }
+    }
+  },
+  {
+    "ID": "n-b",
+    "Name": "n-b",
+    "NodeClass": "app",
+    "NodePool": "default",
+    "Datacenter": "dc1",
+    "Status": "ready",
+    "Drain": false,
+    "SchedulingEligibility": "eligible",
+    "NodeResources": {
+      "Cpu": {
+        "CpuShares": 4000
+      },
+      "Memory": {
+        "MemoryMB": 8000
+      }
+    }
+  },
+  {
+    "ID": "n-c",
+    "Name": "n-c",
+    "NodeClass": "app",
+    "NodePool": "default",
+    "Datacenter": "dc1",
+    "Status": "ready",
+    "Drain": false,
+    "SchedulingEligibility": "eligible"
+  },
+  {
+    "ID": "n-ineligible",
+    "Name": "n-ineligible",
+    "NodeClass": "app",
+    "NodePool": "default",
+    "Datacenter": "dc1",
+    "Status": "ready",
+    "Drain": false,
+    "SchedulingEligibility": "ineligible",
+    "NodeResources": {
+      "Cpu": {
+        "CpuShares": 8000
+      },
+      "Memory": {
+        "MemoryMB": 16000
+      }
+    }
+  },
+  {
+    "ID": "n-draining",
+    "Name": "n-draining",
+    "NodeClass": "app",
+    "NodePool": "default",
+    "Datacenter": "dc1",
+    "Status": "ready",
+    "Drain": true,
+    "SchedulingEligibility": "ineligible",
+    "NodeResources": {
+      "Cpu": {
+        "CpuShares": 8000
+      },
+      "Memory": {
+        "MemoryMB": 16000
+      }
+    }
+  },
+  {
+    "ID": "n-down",
+    "Name": "n-down",
+    "NodeClass": "app",
+    "NodePool": "default",
+    "Datacenter": "dc1",
+    "Status": "down",
+    "Drain": false,
+    "SchedulingEligibility": "eligible",
+    "NodeResources": {
+      "Cpu": {
+        "CpuShares": 8000
+      },
+      "Memory": {
+        "MemoryMB": 16000
+      }
+    }
+  }
+]

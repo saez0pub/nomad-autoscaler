@@ -1,0 +1,19 @@
+{
+  "ID": "sys",
+  "Name": "sys",
+  "Type": "system",
+  "TaskGroups": [
+    {
+      "Name": "web",
+      "Tasks": [
+        {
+          "Name": "agent",
+          "Resources": {
+            "CPU": 100,
+            "MemoryMB": 100
+          }
+        }
+      ]
+    }
+  ]
+}

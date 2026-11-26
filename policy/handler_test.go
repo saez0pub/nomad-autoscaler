@@ -265,6 +265,56 @@ func Test_pickWinnerActionFromGroups(t *testing.T) {
 			wantAction:  actionUp,
 			wantHandler: runnerB,
 		},
+		// The cases below document how a capacity check, which votes `none`
+		// unless an allocation is blocked, has to be grouped with the
+		// utilization checks so it does not prevent scale-in.
+		{
+			name: "ungrouped_none_vetoes_down",
+			checkGroups: map[string][]checkResult{
+				"": {
+					{action: actionNone, handler: runnerA, group: ""},
+					{action: actionDown, handler: runnerB, group: ""},
+				},
+			},
+			wantAction:  actionNone,
+			wantHandler: runnerA,
+		},
+		{
+			name: "lone_group_none_vetoes_down_of_another_group",
+			checkGroups: map[string][]checkResult{
+				"capacity": {
+					{action: actionNone, handler: runnerA, group: "capacity"},
+				},
+				"": {
+					{action: actionDown, handler: runnerB, group: ""},
+				},
+			},
+			wantAction:  actionNone,
+			wantHandler: runnerA,
+		},
+		{
+			name: "same_group_none_lets_down_through",
+			checkGroups: map[string][]checkResult{
+				"capacity": {
+					{action: actionNone, handler: runnerA, group: "capacity"},
+					{action: actionDown, handler: runnerB, group: "capacity"},
+				},
+			},
+			wantAction:  actionDown,
+			wantHandler: runnerB,
+		},
+		{
+			name: "same_group_up_beats_down_and_none",
+			checkGroups: map[string][]checkResult{
+				"capacity": {
+					{action: actionUp, handler: runnerA, group: "capacity"},
+					{action: actionDown, handler: runnerB, group: "capacity"},
+					{action: actionNone, handler: runnerC, group: "capacity"},
+				},
+			},
+			wantAction:  actionUp,
+			wantHandler: runnerA,
+		},
 		{
 			name:        "empty_input",
 			checkGroups: map[string][]checkResult{},

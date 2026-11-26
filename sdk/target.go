@@ -99,6 +99,14 @@ const (
 	// option which dictates how the Nomad Autoscaler selects nodes when
 	// scaling in.
 	TargetConfigNodeSelectorStrategy = "node_selector_strategy"
+
+	// TargetConfigKeyScaleInFitCheck is the optional node target config option
+	// which enables a safety check before scaling in. When "true", nodes are
+	// only drained if their allocations, plus the allocations currently
+	// waiting in blocked evaluations that existing nodes can host, fit on the
+	// remaining nodes. The selection is reduced, or the scale-in skipped, when
+	// they do not. It defaults to "false".
+	TargetConfigKeyScaleInFitCheck = "node_scalein_fit_check"
 )
 
 const (

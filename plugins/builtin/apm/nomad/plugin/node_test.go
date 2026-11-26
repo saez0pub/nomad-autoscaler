@@ -110,6 +110,31 @@ func Test_parseNodePoolQuery(t *testing.T) {
 			name:        "URL-encoded value containing comma",
 		},
 		{
+			inputQuery: "node_fit-deficit_blocked/node_class=app,datacenter=dc1",
+			expectedOutputQuery: &nodePoolQuery{
+				metric: "blocked",
+				poolIDs: nodepool.ClusterNodePoolIdentifierList{
+					nodepool.NewNodeClassPoolIdentifier("app"),
+					nodepool.NewNodeDatacenterPoolIdentifier("dc1"),
+				},
+				operation: "fit-deficit",
+			},
+			expectError: nil,
+			name:        "fit deficit operation",
+		},
+		{
+			inputQuery:          "node_fit-deficit_cpu/node_class=app",
+			expectedOutputQuery: nil,
+			expectError:         errors.New("invalid metric \"cpu\", allowed values are: blocked"),
+			name:                "metric of another operation for fit deficit",
+		},
+		{
+			inputQuery:          "node_percentage-allocated_blocked/node_class=app",
+			expectedOutputQuery: nil,
+			expectError:         errors.New("invalid metric \"blocked\", allowed values are: cpu, memory"),
+			name:                "fit deficit metric for percentage allocated",
+		},
+		{
 			inputQuery:          "",
 			expectedOutputQuery: nil,
 			expectError:         errors.New("expected <query>/<key>=<value>[,<key>=<value>...], received \"\""),
@@ -136,7 +161,7 @@ func Test_parseNodePoolQuery(t *testing.T) {
 		{
 			inputQuery:          "node_invalid_cpu/node_class=high-compute",
 			expectedOutputQuery: nil,
-			expectError:         errors.New("invalid operation \"invalid\", allowed value is percentage-allocated"),
+			expectError:         errors.New("invalid operation \"invalid\", allowed values are percentage-allocated, fit-deficit"),
 			name:                "invalid operation",
 		},
 		{

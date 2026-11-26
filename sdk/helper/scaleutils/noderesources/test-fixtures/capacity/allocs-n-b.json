@@ -1,0 +1,44 @@
+[
+  {
+    "ID": "b1",
+    "ClientStatus": "running",
+    "DesiredStatus": "run",
+    "Job": {
+      "ID": "j-b1",
+      "Type": "service"
+    },
+    "AllocatedResources": {
+      "Tasks": {
+        "main": {
+          "Cpu": {
+            "CpuShares": 1000
+          },
+          "Memory": {
+            "MemoryMB": 2000
+          }
+        }
+      }
+    }
+  },
+  {
+    "ID": "b2",
+    "ClientStatus": "running",
+    "DesiredStatus": "run",
+    "Job": {
+      "ID": "j-b2",
+      "Type": "system"
+    },
+    "AllocatedResources": {
+      "Tasks": {
+        "main": {
+          "Cpu": {
+            "CpuShares": 1900
+          },
+          "Memory": {
+            "MemoryMB": 3900
+          }
+        }
+      }
+    }
+  }
+]

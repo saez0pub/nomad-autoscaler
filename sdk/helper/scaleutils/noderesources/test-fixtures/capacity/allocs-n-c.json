@@ -1,0 +1,15 @@
+[
+  {
+    "ID": "c1",
+    "ClientStatus": "running",
+    "DesiredStatus": "run",
+    "Job": {
+      "ID": "j-c1",
+      "Type": "service"
+    },
+    "Resources": {
+      "CPU": 3000,
+      "MemoryMB": 6000
+    }
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "ID": "small",
+  "Name": "small",
+  "Type": "batch",
+  "TaskGroups": [
+    {
+      "Name": "web",
+      "Tasks": [
+        {
+          "Name": "app",
+          "Resources": {
+            "CPU": 500,
+            "MemoryMB": 512
+          }
+        }
+      ]
+    }
+  ]
+}
