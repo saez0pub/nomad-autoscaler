@@ -440,6 +440,104 @@ func TestAPMPlugin_getPoolResources(t *testing.T) {
 			}),
 		},
 		{
+			name:          "allocated resources only, as reported by Nomad 2.1",
+			config:        map[string]string{},
+			expectError:   false,
+			expectedCPU:   320,
+			expectedMemMB: 160,
+			httpHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				switch r.URL.Path {
+				case "/v1/nodes":
+					_ = json.NewEncoder(w).Encode([]*api.NodeListStub{
+						{ID: "node-ready", NodeClass: "1", Drain: false, SchedulingEligibility: api.NodeSchedulingEligible, Status: api.NodeStatusReady},
+					})
+				case "/v1/node/node-ready":
+					_ = json.NewEncoder(w).Encode(&api.Node{
+						ID: "node-ready",
+						NodeResources: &api.NodeResources{
+							Cpu:    api.NodeCpuResources{CpuShares: 1000},
+							Memory: api.NodeMemoryResources{MemoryMB: 1000},
+						},
+						ReservedResources: &api.NodeReservedResources{},
+					})
+				case "/v1/node/node-ready/allocations":
+					_ = json.NewEncoder(w).Encode([]*api.Allocation{
+						{
+							DesiredStatus: api.AllocDesiredStatusRun,
+							ClientStatus:  api.AllocClientStatusRunning,
+							AllocatedResources: &api.AllocatedResources{
+								Tasks: map[string]*api.AllocatedTaskResources{
+									"web":     {Cpu: api.AllocatedCpuResources{CpuShares: 100}, Memory: api.AllocatedMemoryResources{MemoryMB: 50}},
+									"sidecar": {Cpu: api.AllocatedCpuResources{CpuShares: 20}, Memory: api.AllocatedMemoryResources{MemoryMB: 10}},
+								},
+							},
+						},
+						{
+							DesiredStatus: api.AllocDesiredStatusRun,
+							ClientStatus:  api.AllocClientStatusPending,
+							AllocatedResources: &api.AllocatedResources{
+								Tasks: map[string]*api.AllocatedTaskResources{
+									"web": {Cpu: api.AllocatedCpuResources{CpuShares: 200}, Memory: api.AllocatedMemoryResources{MemoryMB: 100}},
+								},
+							},
+						},
+						{
+							DesiredStatus: api.AllocDesiredStatusRun,
+							ClientStatus:  api.AllocClientStatusComplete,
+							AllocatedResources: &api.AllocatedResources{
+								Tasks: map[string]*api.AllocatedTaskResources{
+									"web": {Cpu: api.AllocatedCpuResources{CpuShares: 999}, Memory: api.AllocatedMemoryResources{MemoryMB: 999}},
+								},
+							},
+						},
+					})
+				default:
+					http.NotFound(w, r)
+				}
+			}),
+		},
+		{
+			name:          "allocated resources win over the deprecated resources",
+			config:        map[string]string{},
+			expectError:   false,
+			expectedCPU:   100,
+			expectedMemMB: 50,
+			httpHandler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				switch r.URL.Path {
+				case "/v1/nodes":
+					_ = json.NewEncoder(w).Encode([]*api.NodeListStub{
+						{ID: "node-ready", NodeClass: "1", Drain: false, SchedulingEligibility: api.NodeSchedulingEligible, Status: api.NodeStatusReady},
+					})
+				case "/v1/node/node-ready":
+					_ = json.NewEncoder(w).Encode(&api.Node{
+						ID: "node-ready",
+						NodeResources: &api.NodeResources{
+							Cpu:    api.NodeCpuResources{CpuShares: 1000},
+							Memory: api.NodeMemoryResources{MemoryMB: 1000},
+						},
+						ReservedResources: &api.NodeReservedResources{},
+					})
+				case "/v1/node/node-ready/allocations":
+					_ = json.NewEncoder(w).Encode([]*api.Allocation{
+						{
+							DesiredStatus: api.AllocDesiredStatusRun,
+							ClientStatus:  api.AllocClientStatusRunning,
+							AllocatedResources: &api.AllocatedResources{
+								Tasks: map[string]*api.AllocatedTaskResources{
+									"web": {Cpu: api.AllocatedCpuResources{CpuShares: 100}, Memory: api.AllocatedMemoryResources{MemoryMB: 50}},
+								},
+							},
+							Resources: &api.Resources{CPU: &cpu, MemoryMB: &mem},
+						},
+					})
+				default:
+					http.NotFound(w, r)
+				}
+			}),
+		},
+		{
 			name: "invalid node filter option",
 			config: map[string]string{
 				"node_filter_ignore_drain": "not-a-bool",

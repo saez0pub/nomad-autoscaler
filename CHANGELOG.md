@@ -8,6 +8,7 @@ IMPROVEMENTS:
 * build: Updated to Go 1.27.2 [[GH-1359](https://github.com/hashicorp/nomad-autoscaler/pull/1359)]
 
 BUG FIXES:
+* plugin/apm/nomad: Fixed the `percentage-allocated` node pool queries failing with "allocation resources are incomplete" when allocations report their resources only in `AllocatedResources`, as Nomad 2.1 does. The deprecated `Resources` field is still used when `AllocatedResources` is absent.
 * scaleutils: Fixed a panic in the `least_busy` node selector when allocations report their resources only in `AllocatedResources`, as Nomad 2.1 does [[GH-1370](https://github.com/hashicorp/nomad-autoscaler/pull/1370)]
 * scaleutils: Fixed a bug where scale-in would block until the context was cancelled when `node_drain_ignore_system_jobs` was enabled, as the wait for all tasks to be dead included system job allocations which the drain intentionally leaves running. [[GH-1363](https://github.com/hashicorp/nomad-autoscaler/pull/1363)]
 

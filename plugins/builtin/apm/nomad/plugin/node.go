@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/nomad-autoscaler/sdk"
 	"github.com/hashicorp/nomad-autoscaler/sdk/helper/scaleutils"
 	"github.com/hashicorp/nomad-autoscaler/sdk/helper/scaleutils/nodepool"
+	"github.com/hashicorp/nomad-autoscaler/sdk/helper/scaleutils/noderesources"
 	"github.com/hashicorp/nomad/api"
 )
 
@@ -173,13 +174,19 @@ func (a *APMPlugin) getNodeAllocatedResources(client *api.Client, nodeID string,
 		if isServerTerminalStatus(alloc) || isClientTerminalStatus(alloc) {
 			continue
 		}
-		if alloc.Resources == nil || alloc.Resources.CPU == nil || alloc.Resources.MemoryMB == nil {
+
+		// Newer Nomad versions only report the resources of an allocation in
+		// AllocatedResources, and older ones in the deprecated Resources. An
+		// allocation with neither cannot be accounted for reliably.
+		if alloc.AllocatedResources == nil &&
+			(alloc.Resources == nil || alloc.Resources.CPU == nil || alloc.Resources.MemoryMB == nil) {
 			return errors.New("allocation resources are incomplete")
 		}
 
 		// Update our tracking with the resources of the allocation.
-		pool.cpu += int64(*alloc.Resources.CPU)
-		pool.mem += int64(*alloc.Resources.MemoryMB)
+		res := noderesources.AllocResources(alloc)
+		pool.cpu += res.CPU
+		pool.mem += res.MemoryMB
 	}
 
 	return nil
